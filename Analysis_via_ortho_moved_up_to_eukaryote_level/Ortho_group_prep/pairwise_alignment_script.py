@@ -8,14 +8,14 @@ import numpy as np
 
 # %%
 genes_pd = pickle.load(open('/data/passala/Generated_Tables/Comparing_all_go_groups_across_species/OrthoDB_python_files/orthodb_v11_genes.p','rb'))
-og2genes_pd = pd.read_csv('/data/passala/OrthoDB_data/embryophyta_groups.csv',names = ['Orthogroup','Gene','Species'])
+og2genes_pd = pd.read_csv('/data/passala/OrthoDB_data/eukaryota_groups.csv',names = ['Orthogroup','Gene','Species'])
 
 # %%
 og2genes_pd['Ortholevel'] = og2genes_pd['Orthogroup'].str.split('t').str[1]
 
 # %%
-species_with_nets = pd.read_csv('/data/passala/Generated_Tables/Reference_tables/Species_name_resolver.csv')
-species_with_nets = species_with_nets[:18]
+species_with_nets = pd.read_csv('/data/passala/Generated_Tables/Reference_tables/species_for_running_cross_ortho_analysis.csv')
+
 # # species_with_nets = species_with_nets.drop(index = [13,14])
 # # species_with_nets.loc[0,'Taxa ID'] = 39947 
 taxa_to_keep = species_with_nets['Taxa ID'].to_list()
@@ -42,7 +42,7 @@ ncbi_mapping = pd.read_csv('/data/passala/OrthoDB_data/NCBI_data/merged_ncbi_to_
 og2genes_only_cococonet = og2genes_only_cococonet.merge(right = ncbi_mapping[['Orthodb Gene','Symbol']], right_on = 'Orthodb Gene',left_on='Gene')
 
 # %%
-og2genes_only_cococonet.to_csv('/data/passala/OrthoDB_data/NCBI_data/og_2_Genes_with_network_id.csv',index = False)
+og2genes_only_cococonet.to_csv('/data/passala/OrthoDB_data/NCBI_data/eukaryota_level_stuff/og_2_Genes_with_network_id.csv',index = False)
 
 # %%
 for combo in tq.tqdm(species_combinations,desc='outer',position = 0):
@@ -69,7 +69,7 @@ for combo in tq.tqdm(species_combinations,desc='outer',position = 0):
     ncbi_added_once_clean= ncbi_added_once.drop(columns = 'Orthodb Gene').rename(columns = {'Symbol':f'{species_1_name} Symbol'})
     ncbi_added_twice = ncbi_added_once_clean.merge(right = ncbi_mapping[['Orthodb Gene','Symbol']], right_on = 'Orthodb Gene',left_on=f'{species_2_name} OrthoGene')
     full_final = ncbi_added_twice.drop(columns = 'Orthodb Gene').rename(columns = {'Symbol':f'{species_2_name} Symbol'})
-    final_species_file_name = f"/home/passala/passala/OrthoDB_data/V_11_pairwise_maps_fixed_problem_species/{species_1_name}_to_{species_2_name}_ortholog_NM.csv"
+    final_species_file_name = f"/data/passala/OrthoDB_data/Eukaryota_level_orthodb/V_11_pairwise_maps/{species_1_name}_to_{species_2_name}_ortholog_NM.csv"
     full_final.to_csv(final_species_file_name, index=False)
 
 
